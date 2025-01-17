@@ -105,19 +105,19 @@ public class Exchange {
 		//This is a bid for a security
 		if (o instanceof Bid) {// Order is a bid
 			//Go to the asks half-book, see if there are matching asks (selling offers) and process them
-			oOutcome = askHalfBook.processOrder(o, time);
+			oOutcome = book.getAsks().processOrder(o, time);
 			//If the quanity of the unfulfilled order in the outcome is not zero
 			if (oOutcome.getUnfulfilledOrder().getQuantity() > 0) {
 				//Not the entire order was fulfilled, add the unfulfilled order to the bid half-book 
-				bidsHalfBook.addOrder(oOutcome.getUnfulfilledOrder());
+				book.getBids().addOrder(oOutcome.getUnfulfilledOrder());
 			}
 		} else { //order is an ask
 			//Go to the bids half-book and see if there are matching bids (buying offers) and process them
-			oOutcome = bidsHalfBook.processOrder(o, time);
+			oOutcome = book.getBids().processOrder(o, time);
 			//If the quanity of the unfulfilled order in the outcome is not zero
 			if (oOutcome.getUnfulfilledOrder().getQuantity() > 0) {
 				// Not the entire order was fulfilled, add it to the bid half-book
-				asksHalfBook.addOrder(oOutcome.getUnfulfilledOrder());
+				book.getAsks().addOrder(oOutcome.getUnfulfilledOrder());
 			}			
 		}
 
@@ -131,14 +131,12 @@ public class Exchange {
 		//Calculate Fees for the trades
 		for (ITrade t:oOutcome.getResultingTrades()) {
 			
-			//Update balances for Buyer
-			
 			//Get the fee that they buyer is supposed to pay
 			double buyerFeeToPay = t.getBuyerFee();
 			//Apply the above fee to the account balance of the buyer 			
 			accounts.getTraderAccount(t.getBuyer()).deductBalance(buyerFeeToPay);
 			//Apply the trade payment to the account balance of the buyer (they spent money)
-			accounts.getTraderAccount(t.getBuyer()).deductBalance(t.getTradePrice() * t.getQuantity());
+			accounts.getTraderAccount(t.getBuyer()).deductBalance(t.getTradeValue());
 			//Add the bought stocks to the position of the buyer
 			accounts.getTraderAccount(t.getBuyer()).addPosition(t.getSecurity().getTicker(), t.getQuantity());
 			
@@ -149,7 +147,7 @@ public class Exchange {
 			//Apply the above fee to the account balance of the seller
 			accounts.getTraderAccount(t.getBuyer()).deductBalance(sellerFeeToPay);
 			//Apply the trade payment to the account balance of the seller (they earned money)
-			accounts.getTraderAccount(t.getSeller()).addBalance(t.getTradePrice() * t.getQuantity());
+			accounts.getTraderAccount(t.getSeller()).addBalance(t.getTradeValue());
 			//Deduct the sold stocks from the position of the seller
 			accounts.getTraderAccount(t.getSeller()).deductPosition(t.getSecurity().getTicker(), t.getQuantity());
 			
