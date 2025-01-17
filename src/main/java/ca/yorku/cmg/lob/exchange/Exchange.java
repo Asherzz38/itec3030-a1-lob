@@ -134,9 +134,9 @@ public class Exchange {
 			//Get the fee that they buyer is supposed to pay
 			double buyerFeeToPay = t.getBuyerFee();
 			//Apply the above fee to the account balance of the buyer 			
-			accounts.getTraderAccount(t.getBuyer()).deductBalance(buyerFeeToPay);
+			accounts.getTraderAccount(t.getBuyer()).withdrawMoney(buyerFeeToPay);
 			//Apply the trade payment to the account balance of the buyer (they spent money)
-			accounts.getTraderAccount(t.getBuyer()).deductBalance(t.getTradeValue());
+			accounts.getTraderAccount(t.getBuyer()).withdrawMoney(t.getTradeValue());
 			//Add the bought stocks to the position of the buyer
 			accounts.getTraderAccount(t.getBuyer()).addPosition(t.getSecurity().getTicker(), t.getQuantity());
 			
@@ -145,11 +145,11 @@ public class Exchange {
 			//Get the fee that the seller is supposed to pay
 			double sellerFeeToPay = t.getSellerFee();
 			//Apply the above fee to the account balance of the seller
-			accounts.getTraderAccount(t.getBuyer()).deductBalance(sellerFeeToPay);
+			accounts.getTraderAccount(t.getBuyer()).withdrawMoney(sellerFeeToPay);
 			//Apply the trade payment to the account balance of the seller (they earned money)
-			accounts.getTraderAccount(t.getSeller()).addBalance(t.getTradeValue());
+			accounts.getTraderAccount(t.getSeller()).addMoney(t.getTradeValue());
 			//Deduct the sold stocks from the position of the seller
-			accounts.getTraderAccount(t.getSeller()).deductPosition(t.getSecurity().getTicker(), t.getQuantity());
+			accounts.getTraderAccount(t.getSeller()).deductFromPosition(t.getSecurity().getTicker(), t.getQuantity());
 			
 			this.totalFees += t.getBuyerFee() + t.getSellerFee(); 
 		}
