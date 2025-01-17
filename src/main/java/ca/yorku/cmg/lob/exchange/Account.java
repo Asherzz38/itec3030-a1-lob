@@ -26,7 +26,7 @@ public abstract class Account {
     private PositionBook book;
 
     /** The current balance of the account in monetary units. */
-    private long balance;
+    private int balance;
 
     /**
      * Constructs an {@linkplain ca.yorku.cmg.lob.exchange.Account} with an associated {@linkplain ca.yorku.cmg.lob.trader.Trader} and an initial balance.
@@ -54,7 +54,7 @@ public abstract class Account {
      *
      * @return the current balance
      */
-    public long getBalance() {
+    public int getBalance() {
         return balance;
     }
 
