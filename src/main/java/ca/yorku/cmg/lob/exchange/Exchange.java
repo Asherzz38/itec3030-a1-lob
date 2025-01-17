@@ -59,7 +59,8 @@ public class Exchange {
 			System.err.println("Order validation: ticker " + o.getSecurity().getTicker() + " not supported.");
 			return (false);
 		}
-		
+
+		Trader trader = accounts.getTraderByID(o.getTrader().getID());
 		//Does the trader exist? Check to see if the trader exists 
 		if (accounts.getTraderByID(o.getTrader().getID()) == null) {
 			System.err.println("Order validation: trader with ID " + o.getTrader().getID() + " not registered with the exchange.");
@@ -67,9 +68,9 @@ public class Exchange {
 		}
 
 		//Put in pos the position that the trader mentioned in the order has in the security mentioned in the order
-		int pos = accounts.getTraderAccount(o.getTrader()).getPosition(o.getSecurity().getTicker());
+		int pos = accounts.getTraderAccount(trader).getPosition(o.getSecurity().getTicker());
 		//Get the balance the trader has with the exchange
-		long bal = accounts.getTraderAccount(o.getTrader()).getBalance();
+		long bal = accounts.getTraderAccount(trader).getBalance();
 
 		// Does ask trader have position at the security sufficient for a sell?
 		if ((o instanceof Ask) && (pos < o.getQuantity())) {
